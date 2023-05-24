@@ -12,7 +12,7 @@ Follow the instructions on the [official Microsoft website](https://docs.microso
   3. In the vcpkg root directory, run the vcpkg bootstrapper command:
   `C:\Users\Username\vcpkg> bootstrap-vcpkg.bat`
 
-### Install protobuf using vcpkg:
+### Install protobuf for AERA (NOT Webots) using vcpkg:
 
 #### Prerequisites:
 In order to use protobuf in the debug version of AERA it needs to be compiled with `ITERATOR_DEBUG_LEVEL = 0`. Do do this you need to change the `x86-windows.cmake` triplets of vcpkg. **Make a backup of the original `x86-windows.cmake` before continuing**.
@@ -42,6 +42,18 @@ C:\Users\<username>\vcpkg> vcpkg integrate install
 ```
 If it returns with an error message it probably is because of lacking administrator rights. For this open a new terminal as an administrator and rerun the previous command.
 
+### Install protobuf for Webots (NOT AERA) using vcpkg:
+
+#### Prerequisites:
+To install Protobuf for usage on the Webots side, there are no prerequisits that you need to take care of. However, Webots is using x64, not x86 architecture. Pay close attention to this.
+
+#### Installation:
+If the x64 version of protobuf has not been installed automatically when installing the x86 version, all you have to do is follow the same isntructions as above, only changing the install commans to:
+```
+C:\Users\<username>\vcpkg> vcpkg install protobuf protobuf:x64-windows
+```
+vcpkg should take care of everything else.
+
 ## Compile proto files:
 **Not necessary for simply building and using the TCP IODevice, skip if not changing the `tcp_data_message.proto` file.**
 
@@ -56,8 +68,14 @@ C:\Path\to\replicode\AERA\IODevices\TCP\Proto> protoc -I=. --cpp_out=. tcp_data_
 
 After recompiling the .proto file you must add the #ifdef ENABLE_PROTOBUF statement to the generated .pp.cc file in the same way as before.
 
-## Add created libraries to your project
-Once everything is installed you need to add the created dlls to your project. For this simply copy-paste `libprotobufd.dll` and `libprotobuf-lited.dll` from `C:\Path\to\vcpkg\installed\x86-windows\debug\bin` to `C:\Path\to\replicode\Debug`. And if you have compiled the project as release additionally copy paste `libprotobuf.dll` and `libprotobuf-lite.dll` from `C:\Path\to\vcpkg\installed\x86-windows\bin` to `C:\Path\to\replicode\Release`. Now everything should be set up for running AERA with a TCP connection.
+## Add created libraries to Webots
+Once everything is installed you need to add the created dlls to your project. For this simply copy-paste `libprotobuf.dll` and `libprotobuf-lite.dll` from `C:\Path\to\vcpkg\installed\x86-windows\bin` to `C:\Path\to\Webots\controllers\folder`. Now everything should be set up for running AERA with a TCP connection.
+
+
+## Add created libraries to AERA (Should not be necessary)
+Vcpkg should take care of copy pasting the generated dlls to AERA.
+
+However, if this is not the case, do the same as above, copy-pasting the aforementioned dlls to the generated AERA Release folder. Additionally, copy-paste `libprotobufd.dll` and `libprotobuf-lited.dll` from `C:\Path\to\vcpkg\installed\x86-windows\debug\bin` to `C:\Path\to\replicode\Debug`. Since different dlls are used for Release/ Debug configuration.
 
 ## Enable protobuf in AERA
 If you want to use the tcp-connection with AERA you have to enable it by setting the ENABLE_PROTOBUF flag in the AERA project properties. For this right-click on the AERA project (in the solution view on the left), select Properties -> C/C++ -> Preprocessor. There in the first line (Preprocessor Definitions) add a new entry called ENABLE_PROTOBUF.
