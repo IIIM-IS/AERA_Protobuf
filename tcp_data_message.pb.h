@@ -1527,6 +1527,7 @@ class VariableDescription final :
 
   enum : int {
     kDimensionsFieldNumber = 4,
+    kOpcodeStringHandleFieldNumber = 5,
     kEntityIDFieldNumber = 1,
     kIDFieldNumber = 2,
     kDataTypeFieldNumber = 3,
@@ -1552,6 +1553,20 @@ class VariableDescription final :
       dimensions() const;
   ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint64_t >*
       mutable_dimensions();
+
+  // string opcode_string_handle = 5;
+  void clear_opcode_string_handle();
+  const std::string& opcode_string_handle() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_opcode_string_handle(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_opcode_string_handle();
+  PROTOBUF_NODISCARD std::string* release_opcode_string_handle();
+  void set_allocated_opcode_string_handle(std::string* opcode_string_handle);
+  private:
+  const std::string& _internal_opcode_string_handle() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_opcode_string_handle(const std::string& value);
+  std::string* _internal_mutable_opcode_string_handle();
+  public:
 
   // int32 entityID = 1;
   void clear_entityid();
@@ -1590,6 +1605,7 @@ class VariableDescription final :
   struct Impl_ {
     ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint64_t > dimensions_;
     mutable std::atomic<int> _dimensions_cached_byte_size_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr opcode_string_handle_;
     int32_t entityid_;
     int32_t id_;
     int datatype_;
@@ -2609,6 +2625,56 @@ inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint64_t >*
 VariableDescription::mutable_dimensions() {
   // @@protoc_insertion_point(field_mutable_list:tcp_io_device.VariableDescription.dimensions)
   return _internal_mutable_dimensions();
+}
+
+// string opcode_string_handle = 5;
+inline void VariableDescription::clear_opcode_string_handle() {
+  _impl_.opcode_string_handle_.ClearToEmpty();
+}
+inline const std::string& VariableDescription::opcode_string_handle() const {
+  // @@protoc_insertion_point(field_get:tcp_io_device.VariableDescription.opcode_string_handle)
+  return _internal_opcode_string_handle();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void VariableDescription::set_opcode_string_handle(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.opcode_string_handle_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:tcp_io_device.VariableDescription.opcode_string_handle)
+}
+inline std::string* VariableDescription::mutable_opcode_string_handle() {
+  std::string* _s = _internal_mutable_opcode_string_handle();
+  // @@protoc_insertion_point(field_mutable:tcp_io_device.VariableDescription.opcode_string_handle)
+  return _s;
+}
+inline const std::string& VariableDescription::_internal_opcode_string_handle() const {
+  return _impl_.opcode_string_handle_.Get();
+}
+inline void VariableDescription::_internal_set_opcode_string_handle(const std::string& value) {
+  
+  _impl_.opcode_string_handle_.Set(value, GetArenaForAllocation());
+}
+inline std::string* VariableDescription::_internal_mutable_opcode_string_handle() {
+  
+  return _impl_.opcode_string_handle_.Mutable(GetArenaForAllocation());
+}
+inline std::string* VariableDescription::release_opcode_string_handle() {
+  // @@protoc_insertion_point(field_release:tcp_io_device.VariableDescription.opcode_string_handle)
+  return _impl_.opcode_string_handle_.Release();
+}
+inline void VariableDescription::set_allocated_opcode_string_handle(std::string* opcode_string_handle) {
+  if (opcode_string_handle != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.opcode_string_handle_.SetAllocated(opcode_string_handle, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.opcode_string_handle_.IsDefault()) {
+    _impl_.opcode_string_handle_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:tcp_io_device.VariableDescription.opcode_string_handle)
 }
 
 // -------------------------------------------------------------------

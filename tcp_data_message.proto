@@ -70,6 +70,7 @@ message VariableDescription {
     int32 ID = 2;
     DataType dataType = 3;
     repeated uint64 dimensions = 4;
+	string opcode_string_handle = 5;
 }
 
 message ProtoVariable

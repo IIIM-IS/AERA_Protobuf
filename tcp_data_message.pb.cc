@@ -144,6 +144,7 @@ PROTOBUF_CONSTEXPR VariableDescription::VariableDescription(
     ::_pbi::ConstantInitialized): _impl_{
     /*decltype(_impl_.dimensions_)*/{}
   , /*decltype(_impl_._dimensions_cached_byte_size_)*/{0}
+  , /*decltype(_impl_.opcode_string_handle_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.entityid_)*/0
   , /*decltype(_impl_.id_)*/0
   , /*decltype(_impl_.datatype_)*/0
@@ -269,6 +270,7 @@ const uint32_t TableStruct_tcp_5fdata_5fmessage_2eproto::offsets[] PROTOBUF_SECT
   PROTOBUF_FIELD_OFFSET(::tcp_io_device::VariableDescription, _impl_.id_),
   PROTOBUF_FIELD_OFFSET(::tcp_io_device::VariableDescription, _impl_.datatype_),
   PROTOBUF_FIELD_OFFSET(::tcp_io_device::VariableDescription, _impl_.dimensions_),
+  PROTOBUF_FIELD_OFFSET(::tcp_io_device::VariableDescription, _impl_.opcode_string_handle_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::tcp_io_device::ProtoVariable, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -289,7 +291,7 @@ static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protode
   { 66, -1, -1, sizeof(::tcp_io_device::CommandDescription)},
   { 74, -1, -1, sizeof(::tcp_io_device::DataMessage)},
   { 82, -1, -1, sizeof(::tcp_io_device::VariableDescription)},
-  { 92, -1, -1, sizeof(::tcp_io_device::ProtoVariable)},
+  { 93, -1, -1, sizeof(::tcp_io_device::ProtoVariable)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
@@ -332,19 +334,20 @@ const char descriptor_table_protodef_tcp_5fdata_5fmessage_2eproto[] PROTOBUF_SEC
   "\0227\n\013description\030\001 \001(\0132\".tcp_io_device.Va"
   "riableDescription\022\014\n\004name\030\002 \001(\t\"P\n\013DataM"
   "essage\022/\n\tvariables\030\001 \003(\0132\034.tcp_io_devic"
-  "e.ProtoVariable\022\020\n\010timeSpan\030\002 \001(\004\"\340\001\n\023Va"
+  "e.ProtoVariable\022\020\n\010timeSpan\030\002 \001(\004\"\376\001\n\023Va"
   "riableDescription\022\020\n\010entityID\030\001 \001(\005\022\n\n\002I"
   "D\030\002 \001(\005\022=\n\010dataType\030\003 \001(\0162+.tcp_io_devic"
   "e.VariableDescription.DataType\022\022\n\ndimens"
-  "ions\030\004 \003(\004\"X\n\010DataType\022\n\n\006DOUBLE\020\000\022\t\n\005IN"
-  "T64\020\003\022\010\n\004BOOL\020\014\022\n\n\006STRING\020\r\022\t\n\005BYTES\020\016\022\024"
-  "\n\020COMMUNICATION_ID\020\017\"S\n\rProtoVariable\0224\n"
-  "\010metaData\030\001 \001(\0132\".tcp_io_device.Variable"
-  "Description\022\014\n\004data\030\002 \001(\014b\006proto3"
+  "ions\030\004 \003(\004\022\034\n\024opcode_string_handle\030\005 \001(\t"
+  "\"X\n\010DataType\022\n\n\006DOUBLE\020\000\022\t\n\005INT64\020\003\022\010\n\004B"
+  "OOL\020\014\022\n\n\006STRING\020\r\022\t\n\005BYTES\020\016\022\024\n\020COMMUNIC"
+  "ATION_ID\020\017\"S\n\rProtoVariable\0224\n\010metaData\030"
+  "\001 \001(\0132\".tcp_io_device.VariableDescriptio"
+  "n\022\014\n\004data\030\002 \001(\014b\006proto3"
   ;
 static ::_pbi::once_flag descriptor_table_tcp_5fdata_5fmessage_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_tcp_5fdata_5fmessage_2eproto = {
-    false, false, 1353, descriptor_table_protodef_tcp_5fdata_5fmessage_2eproto,
+    false, false, 1383, descriptor_table_protodef_tcp_5fdata_5fmessage_2eproto,
     "tcp_data_message.proto",
     &descriptor_table_tcp_5fdata_5fmessage_2eproto_once, nullptr, 0, 11,
     schemas, file_default_instances, TableStruct_tcp_5fdata_5fmessage_2eproto::offsets,
@@ -1995,12 +1998,21 @@ VariableDescription::VariableDescription(const VariableDescription& from)
   new (&_impl_) Impl_{
       decltype(_impl_.dimensions_){from._impl_.dimensions_}
     , /*decltype(_impl_._dimensions_cached_byte_size_)*/{0}
+    , decltype(_impl_.opcode_string_handle_){}
     , decltype(_impl_.entityid_){}
     , decltype(_impl_.id_){}
     , decltype(_impl_.datatype_){}
     , /*decltype(_impl_._cached_size_)*/{}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _impl_.opcode_string_handle_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.opcode_string_handle_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (!from._internal_opcode_string_handle().empty()) {
+    _this->_impl_.opcode_string_handle_.Set(from._internal_opcode_string_handle(), 
+      _this->GetArenaForAllocation());
+  }
   ::memcpy(&_impl_.entityid_, &from._impl_.entityid_,
     static_cast<size_t>(reinterpret_cast<char*>(&_impl_.datatype_) -
     reinterpret_cast<char*>(&_impl_.entityid_)) + sizeof(_impl_.datatype_));
@@ -2014,11 +2026,16 @@ inline void VariableDescription::SharedCtor(
   new (&_impl_) Impl_{
       decltype(_impl_.dimensions_){arena}
     , /*decltype(_impl_._dimensions_cached_byte_size_)*/{0}
+    , decltype(_impl_.opcode_string_handle_){}
     , decltype(_impl_.entityid_){0}
     , decltype(_impl_.id_){0}
     , decltype(_impl_.datatype_){0}
     , /*decltype(_impl_._cached_size_)*/{}
   };
+  _impl_.opcode_string_handle_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.opcode_string_handle_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
 }
 
 VariableDescription::~VariableDescription() {
@@ -2033,6 +2050,7 @@ VariableDescription::~VariableDescription() {
 inline void VariableDescription::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
   _impl_.dimensions_.~RepeatedField();
+  _impl_.opcode_string_handle_.Destroy();
 }
 
 void VariableDescription::SetCachedSize(int size) const {
@@ -2046,6 +2064,7 @@ void VariableDescription::Clear() {
   (void) cached_has_bits;
 
   _impl_.dimensions_.Clear();
+  _impl_.opcode_string_handle_.ClearToEmpty();
   ::memset(&_impl_.entityid_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&_impl_.datatype_) -
       reinterpret_cast<char*>(&_impl_.entityid_)) + sizeof(_impl_.datatype_));
@@ -2091,6 +2110,16 @@ const char* VariableDescription::_InternalParse(const char* ptr, ::_pbi::ParseCo
         } else if (static_cast<uint8_t>(tag) == 32) {
           _internal_add_dimensions(::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr));
           CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // string opcode_string_handle = 5;
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
+          auto str = _internal_mutable_opcode_string_handle();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "tcp_io_device.VariableDescription.opcode_string_handle"));
         } else
           goto handle_unusual;
         continue;
@@ -2151,6 +2180,16 @@ uint8_t* VariableDescription::_InternalSerialize(
     }
   }
 
+  // string opcode_string_handle = 5;
+  if (!this->_internal_opcode_string_handle().empty()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_opcode_string_handle().data(), static_cast<int>(this->_internal_opcode_string_handle().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "tcp_io_device.VariableDescription.opcode_string_handle");
+    target = stream->WriteStringMaybeAliased(
+        5, this->_internal_opcode_string_handle(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -2179,6 +2218,13 @@ size_t VariableDescription::ByteSizeLong() const {
     _impl_._dimensions_cached_byte_size_.store(cached_size,
                                     std::memory_order_relaxed);
     total_size += data_size;
+  }
+
+  // string opcode_string_handle = 5;
+  if (!this->_internal_opcode_string_handle().empty()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_opcode_string_handle());
   }
 
   // int32 entityID = 1;
@@ -2216,6 +2262,9 @@ void VariableDescription::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, co
   (void) cached_has_bits;
 
   _this->_impl_.dimensions_.MergeFrom(from._impl_.dimensions_);
+  if (!from._internal_opcode_string_handle().empty()) {
+    _this->_internal_set_opcode_string_handle(from._internal_opcode_string_handle());
+  }
   if (from._internal_entityid() != 0) {
     _this->_internal_set_entityid(from._internal_entityid());
   }
@@ -2241,8 +2290,14 @@ bool VariableDescription::IsInitialized() const {
 
 void VariableDescription::InternalSwap(VariableDescription* other) {
   using std::swap;
+  auto* lhs_arena = GetArenaForAllocation();
+  auto* rhs_arena = other->GetArenaForAllocation();
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   _impl_.dimensions_.InternalSwap(&other->_impl_.dimensions_);
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.opcode_string_handle_, lhs_arena,
+      &other->_impl_.opcode_string_handle_, rhs_arena
+  );
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
       PROTOBUF_FIELD_OFFSET(VariableDescription, _impl_.datatype_)
       + sizeof(VariableDescription::_impl_.datatype_)
