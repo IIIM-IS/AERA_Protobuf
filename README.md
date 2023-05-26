@@ -45,13 +45,13 @@ If it returns with an error message it probably is because of lacking administra
 ## Compile proto files:
 **Not necessary for simply building and using the TCP IODevice, skip if not changing the `tcp_data_message.proto` file.**
 
-If you ever change the proto file found in `...\replicode\AERA\IODevice\TCP\proto` you will have to recompile the proto file. For this use protoc which is included in the previously installed vcpkg protobuf installation. If protoc is not in your path run the following from the `...\vcpkg\installed\x86-windows\tools\protobuf\` folder:
+If you ever change the proto file you will have to recompile it. For this use protoc which is included in the previously installed vcpkg protobuf installation. If protoc is not in your path run the following from the `...\vcpkg\installed\x86-windows\tools\protobuf\` folder:
 ```
-protoc -I=C:\Path\to\replicode\AERA\IODevices\TCP\Proto --cpp_out=C:\Path\to\replicode\AERA\IODevices\TCP\Proto C:\Path\to\replicode\AERA\IODevices\TCP\Proto\tcp_data_message.proto
+protoc -I=C:\Path\to\AERA_Protobuf --cpp_out=C:\Path\to\AERA_Protobuf  C:\Path\to\AERA_Protobuf\tcp_data_message.proto
 ```
 If protoc is in your path simply `cd` into the `Proto folder` and run:
 ```
-C:\Path\to\replicode\AERA\IODevices\TCP\Proto> protoc -I=. --cpp_out=. tcp_data_message.proto
+C:\Path\to\AERA_Protobuf> protoc -I=. --cpp_out=. tcp_data_message.proto
 ```
 
 After recompiling the .proto file you must add the #ifdef ENABLE_PROTOBUF statement to the generated .pp.cc file in the same way as before.
