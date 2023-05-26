@@ -57,7 +57,9 @@ vcpkg should take care of everything else.
 ## Compile proto files:
 **Not necessary for simply building and using the TCP IODevice, skip if not changing the `tcp_data_message.proto` file.**
 
-If you ever change the proto file you will have to recompile it. For this use protoc which is included in the previously installed vcpkg protobuf installation. If protoc is not in your path run the following from the `...\vcpkg\installed\x86-windows\tools\protobuf\` folder:
+If you ever change the proto file you will have to recompile it.
+For this use protoc which is included in the previously installed vcpkg protobuf installation.
+If protoc is not in your path run the following from the `...\vcpkg\installed\x86-windows\tools\protobuf\` folder (for the compilation, it does not matter whether you use protoc located in the x86-windows or the x64-windows folder):
 ```
 protoc -I=C:\Path\to\AERA_Protobuf --cpp_out=C:\Path\to\AERA_Protobuf  C:\Path\to\AERA_Protobuf\tcp_data_message.proto
 ```
