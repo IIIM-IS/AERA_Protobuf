@@ -3,9 +3,9 @@
 //_/_/ AERA
 //_/_/ Autocatalytic Endogenous Reflective Architecture
 //_/_/ 
-//_/_/ Copyright (c) 2018-2023 Jeff Thompson
-//_/_/ Copyright (c) 2018-2023 Kristinn R. Thorisson
-//_/_/ Copyright (c) 2018-2023 Icelandic Institute for Intelligent Machines
+//_/_/ Copyright (c) 2018-2022 Jeff Thompson
+//_/_/ Copyright (c) 2018-2022 Kristinn R. Thorisson
+//_/_/ Copyright (c) 2018-2022 Icelandic Institute for Intelligent Machines
 //_/_/ Copyright (c) 2021 Leonard Eberding
 //_/_/ http://www.iiim.is
 //_/_/
@@ -65,6 +65,9 @@ namespace tcp_io_device {
   class MetaData {
     friend class MsgData;
 
+  private:
+    MetaData() {}
+
   protected:
     int entity_id_;
     int id_;
@@ -84,6 +87,18 @@ namespace tcp_io_device {
         meta_data->id(),
         meta_data->datatype(),
         std::vector<uint64_t>(meta_data->dimensions().begin(), meta_data->dimensions().end()));
+    }
+
+    /**
+    * Constructor for MetaData objects. Best only used to create the objects when first initializing the communicaiton. To parse
+    * incoming messages please see the other constructor.
+    * \param entity An identifier describing the entity to which this MetaData objects is related.
+    * \param name An identifier for the name of the data.
+    * \param t The VariableDescription_DataType of the data.
+    * \param dimensions The dimensionality of the data associated with this MetaData object.
+    */
+    MetaData(int entity_id, int name_id, VariableDescription_DataType t, std::vector<uint64_t> dimensions) {
+      setMetaData(entity_id, name_id, t, dimensions);
     }
 
     /**
@@ -156,8 +171,22 @@ namespace tcp_io_device {
         data_length_ *= dimensions_[i];
       }
     }
-  };
 
+    VariableDescription toVariableDescription() {
+      VariableDescription var;
+      var.set_entityid(entity_id_);
+      var.set_id(id_);
+      var.set_datatype(type_);
+      var.mutable_dimensions()->Add(dimensions_.begin(), dimensions_.end());
+      return var;
+    }
+    void toMutableVariableDescription(VariableDescription* mutable_variable_description) {
+      mutable_variable_description->set_entityid(entity_id_);
+      mutable_variable_description->set_id(id_);
+      mutable_variable_description->set_datatype(type_);
+      mutable_variable_description->mutable_dimensions()->Add(dimensions_.begin(), dimensions_.end());
+    }
+  };
 
   /**
   * Class to store a DataMessage including a MetaData object and a string for the bytes of data.
@@ -166,6 +195,7 @@ namespace tcp_io_device {
   private:
     MetaData meta_data_;
     std::string data_;
+    MsgData() {}
   public:
 
     /**
@@ -174,6 +204,14 @@ namespace tcp_io_device {
     */
     MsgData(const ProtoVariable* msg) : meta_data_(&(msg->metadata())) {
       setData(msg->data());
+    }
+
+    template<typename T>
+    static MsgData createNewMsgData(MetaData meta_data, std::vector<T> data) {
+      MsgData msg_data = MsgData();
+      msg_data.meta_data_ = meta_data;
+      msg_data.setData(data);
+      return msg_data;
     }
 
 
@@ -185,6 +223,25 @@ namespace tcp_io_device {
       data_ = d;
     }
 
+    template<typename T>
+    void setData(std::vector<T> data) {
+      std::string data_string;
+      for (auto it = data.begin(); it != data.end(); ++it) {
+        char data_char[sizeof(T)];
+        memcpy(data_char, &(*it), sizeof(T));
+        data_string.append(std::string(data_char, sizeof(T)));
+      }
+      setData(data_string);
+    }
+
+    template<>
+    void setData<char>(std::vector<char> data) {
+      std::string data_string;
+      for (auto it = data.begin(); it != data.end(); ++it) {
+        data_string.append(&(*it));
+      }
+      setData(data_string);
+    }
 
     /**
     * Returns the MetaData object corresponding to this MsgData.
@@ -196,7 +253,7 @@ namespace tcp_io_device {
     std::string _data() { return data_; }
 
     /**
-    * Casts the data from the byte representation stored as a string to the template type.
+    * Casts the data from the byte representation stored as a string to the template type. @todo: Check for dimensionality.
     */
     template <typename T> std::vector<T> getData() {
       T a;
@@ -208,7 +265,18 @@ namespace tcp_io_device {
       }
       return values;
     }
+
+    template<>
+    std::vector<std::string> getData() {
+      std::vector<std::string> values;
+      values.push_back(data_);
+      return values;
+    }
+
+    void toMutableProtoVariable(ProtoVariable* var) {
+      VariableDescription* meta_data = var->mutable_metadata();
+      meta_data_.toMutableVariableDescription(meta_data);
+      var->set_data(data_);
+    }
   };
-
-
 }
