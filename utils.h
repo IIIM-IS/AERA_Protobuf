@@ -76,6 +76,7 @@ namespace tcp_io_device {
     uint64_t data_size_ = 0;
     uint64_t data_length_ = 0;
     std::vector<uint64_t> dimensions_;
+    std::string opcode_handle_;
 
   public:
     /**
@@ -86,7 +87,8 @@ namespace tcp_io_device {
       setMetaData(meta_data->entityid(),
         meta_data->id(),
         meta_data->datatype(),
-        std::vector<uint64_t>(meta_data->dimensions().begin(), meta_data->dimensions().end()));
+        std::vector<uint64_t>(meta_data->dimensions().begin(), meta_data->dimensions().end()),
+        meta_data->opcode_string_handle());
     }
 
     /**
@@ -97,8 +99,8 @@ namespace tcp_io_device {
     * \param t The VariableDescription_DataType of the data.
     * \param dimensions The dimensionality of the data associated with this MetaData object.
     */
-    MetaData(int entity_id, int name_id, VariableDescription_DataType t, std::vector<uint64_t> dimensions) {
-      setMetaData(entity_id, name_id, t, dimensions);
+    MetaData(int entity_id, int name_id, VariableDescription_DataType t, std::vector<uint64_t> dimensions, std::string opcode_handle) {
+      setMetaData(entity_id, name_id, t, dimensions, opcode_handle);
     }
 
     /**
@@ -144,11 +146,12 @@ namespace tcp_io_device {
     * \param t The data type of the data (e.g. DOUBLE, INT, or similar).
     * \param d The dimensions of the data.
     */
-    void setMetaData(int entity_id, int id, VariableDescription_DataType t, std::vector<uint64_t> d) {
+    void setMetaData(int entity_id, int id, VariableDescription_DataType t, std::vector<uint64_t> d, std::string opcode_handle) {
       entity_id_ = entity_id;
       id_ = id;
       type_ = t;
       dimensions_ = d;
+      opcode_handle_ = opcode_handle;
       switch (t)
       {
       case 0:
@@ -178,6 +181,7 @@ namespace tcp_io_device {
       var.set_id(id_);
       var.set_datatype(type_);
       var.mutable_dimensions()->Add(dimensions_.begin(), dimensions_.end());
+      var.set_opcode_string_handle(opcode_handle_);
       return var;
     }
     void toMutableVariableDescription(VariableDescription* mutable_variable_description) {
@@ -185,6 +189,7 @@ namespace tcp_io_device {
       mutable_variable_description->set_id(id_);
       mutable_variable_description->set_datatype(type_);
       mutable_variable_description->mutable_dimensions()->Add(dimensions_.begin(), dimensions_.end());
+      mutable_variable_description->set_opcode_string_handle(opcode_handle_);
     }
   };
 
