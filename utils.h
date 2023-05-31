@@ -99,7 +99,7 @@ namespace tcp_io_device {
     * \param t The VariableDescription_DataType of the data.
     * \param dimensions The dimensionality of the data associated with this MetaData object.
     */
-    MetaData(int entity_id, int name_id, VariableDescription_DataType t, std::vector<uint64_t> dimensions, std::string opcode_handle) {
+    MetaData(int entity_id, int name_id, VariableDescription_DataType t, std::vector<uint64_t> dimensions, std::string opcode_handle = "") {
       setMetaData(entity_id, name_id, t, dimensions, opcode_handle);
     }
 
@@ -138,6 +138,11 @@ namespace tcp_io_device {
     */
     VariableDescription_DataType getType() { return type_; }
 
+    /**
+    * Returns the opcode handle of the corresponding message.
+    */
+    std::string getOpCodeHandle() { return opcode_handle_; }
+
 
     /**
     * Sets the fields of the MetaData object.
@@ -146,7 +151,7 @@ namespace tcp_io_device {
     * \param t The data type of the data (e.g. DOUBLE, INT, or similar).
     * \param d The dimensions of the data.
     */
-    void setMetaData(int entity_id, int id, VariableDescription_DataType t, std::vector<uint64_t> d, std::string opcode_handle) {
+    void setMetaData(int entity_id, int id, VariableDescription_DataType t, std::vector<uint64_t> d, std::string opcode_handle = "") {
       entity_id_ = entity_id;
       id_ = id;
       type_ = t;
