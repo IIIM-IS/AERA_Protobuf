@@ -55,7 +55,11 @@
 
 #pragma once
 
+#include <iostream>
+#include <iomanip>
 #include "tcp_data_message.pb.h"
+
+using communication_id_t = int64_t;
 
 namespace tcp_io_device {
   /**
@@ -196,6 +200,23 @@ namespace tcp_io_device {
       mutable_variable_description->mutable_dimensions()->Add(dimensions_.begin(), dimensions_.end());
       mutable_variable_description->set_opcode_string_handle(opcode_handle_);
     }
+
+    friend std::ostream& operator<<(std::ostream& output, const MetaData& meta_data) {
+      output << "MetaData Object: " << std::endl
+        << "EntityID: " << meta_data.entity_id_ << std::endl
+        << "ID: " << meta_data.id_ << std::endl
+        << "DataType: " << meta_data.type_ << std::endl
+        << "TypeSize: " << meta_data.type_size_ << std::endl
+        << "DataSize: " << meta_data.data_size_ << std::endl
+        << "DataLength: " << meta_data.data_length_ << std::endl
+        << "OpCodeHandle: " << meta_data.opcode_handle_ << std::endl
+        << "Dimensions: { ";
+      for (auto it = meta_data.dimensions_.begin(); it != meta_data.dimensions_.end(); ++it) {
+        output << *it << " ";
+      }
+      output << "}" << std::endl;
+      return output;
+    }
   };
 
   /**
@@ -287,6 +308,16 @@ namespace tcp_io_device {
       VariableDescription* meta_data = var->mutable_metadata();
       meta_data_.toMutableVariableDescription(meta_data);
       var->set_data(data_);
+    }
+
+    friend std::ostream& operator<<(std::ostream& output, const MsgData& msg_data) {
+      output << "MsgData Object: " << std::endl
+        << msg_data.meta_data_ << std::endl
+        << "Data: " << std::endl;
+      for (int i = 0; i < msg_data.data_.size(); ++i) {
+        output << std::setw(2) << std::setfill('0') << std::hex << (int)(msg_data.data_[i] & 0xFF);
+      }
+      return output;
     }
   };
 }
