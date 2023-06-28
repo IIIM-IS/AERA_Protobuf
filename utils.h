@@ -226,6 +226,7 @@ namespace tcp_io_device {
   private:
     MetaData meta_data_;
     std::string data_;
+    bool valid_ = true;
     MsgData() {}
   public:
 
@@ -242,9 +243,15 @@ namespace tcp_io_device {
       MsgData msg_data = MsgData();
       msg_data.meta_data_ = meta_data;
       msg_data.setData(data);
+      msg_data.valid_ = true;
       return msg_data;
     }
 
+    static MsgData invalidMsgData() {
+      MsgData msg_data = MsgData();
+      msg_data.valid_ = false;
+      return msg_data;
+    }
 
     /**
     * Setter for the data of the message. Data is stored as a byte representation in form of a std::string.
@@ -319,5 +326,6 @@ namespace tcp_io_device {
       }
       return output;
     }
+    bool isValid() { return valid_; }
   };
 }
