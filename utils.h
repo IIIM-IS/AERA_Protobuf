@@ -330,7 +330,7 @@ namespace tcp_io_device {
         << msg_data.meta_data_ << std::endl
         << "Data: " << std::endl;
       for (int i = 0; i < msg_data.data_.size(); ++i) {
-        output << std::setw(2) << std::setfill('0') << std::hex << (int)(msg_data.data_[i] & 0xFF);
+        output << std::setw(2) << std::setfill('0') << std::hex << (int)(msg_data.data_[i] & 0xFF) << std::dec;
       }
       return output;
     }
