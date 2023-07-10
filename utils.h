@@ -247,6 +247,14 @@ namespace tcp_io_device {
       return msg_data;
     }
 
+    static MsgData createNewMsgData(MetaData meta_data, std::string data) {
+      MsgData msg_data = MsgData();
+      msg_data.meta_data_ = meta_data;
+      msg_data.setData(data);
+      msg_data.valid_ = true;
+      return msg_data;
+    }
+
     static MsgData createNewMsgData(MetaData meta_data) {
       MsgData msg_data = MsgData();
       msg_data.meta_data_ = meta_data;
