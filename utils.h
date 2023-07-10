@@ -304,7 +304,7 @@ namespace tcp_io_device {
     template <typename T> std::vector<T> getData() {
       T a;
       std::vector<T> values;
-      for (int i = 0; i < meta_data_.data_size_; i += sizeof(T)) {
+      for (int i = 0; i < data_.size(); i += sizeof(T)) {
         char* pos = &data_[i];
         memcpy(&a, pos, sizeof(T));
         values.push_back(a);
