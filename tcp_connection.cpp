@@ -222,13 +222,6 @@ namespace tcp_io_device {
       std::cout << "Trying to reconnect in 1 sec..." << std::endl;
       std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
-    if (err == SOCKET_ERROR) {
-      std::cout << "ERROR: Connect failed with error: " << WSAGetLastError() << std::endl;
-      freeaddrinfo(result);
-      closesocket(tcp_socket_);
-      WSACleanup();
-      return 1;
-    }
 
     freeaddrinfo(result);
 
@@ -290,6 +283,9 @@ namespace tcp_io_device {
           continue;
         }
         std::cout << "INFO: Reconnect successfull." << std::endl;
+        std::unique_ptr<TCPMessage> reconnect_msg = std::make_unique<TCPMessage>();
+        reconnect_msg->set_messagetype(TCPMessage::RECONNECT);
+        incoming_queue_->enqueue(std::move(reconnect_msg));
       }
       // First send all data from the queue
       std::unique_ptr<TCPMessage> msg = outgoing_queue_->dequeue();
@@ -407,8 +403,6 @@ namespace tcp_io_device {
       }
       else {
         std::cout << "recv failed during recv of data message with error: " << WSAGetLastError() << std::endl;
-        closesocket(tcp_socket_);
-        WSACleanup();
         return NULL;
       }
     }

@@ -42,6 +42,7 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORIT
 PROTOBUF_CONSTEXPR StartMessage::StartMessage(
     ::_pbi::ConstantInitialized): _impl_{
     /*decltype(_impl_.diagnosticmode_)*/false
+  , /*decltype(_impl_.reconnectiontype_)*/0
   , /*decltype(_impl_._cached_size_)*/{}} {}
 struct StartMessageDefaultTypeInternal {
   PROTOBUF_CONSTEXPR StartMessageDefaultTypeInternal()
@@ -174,7 +175,7 @@ struct ProtoVariableDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ProtoVariableDefaultTypeInternal _ProtoVariable_default_instance_;
 }  // namespace tcp_io_device
 static ::_pb::Metadata file_level_metadata_tcp_5fdata_5fmessage_2eproto[11];
-static const ::_pb::EnumDescriptor* file_level_enum_descriptors_tcp_5fdata_5fmessage_2eproto[2];
+static const ::_pb::EnumDescriptor* file_level_enum_descriptors_tcp_5fdata_5fmessage_2eproto[3];
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_tcp_5fdata_5fmessage_2eproto = nullptr;
 
 const uint32_t TableStruct_tcp_5fdata_5fmessage_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
@@ -198,6 +199,7 @@ const uint32_t TableStruct_tcp_5fdata_5fmessage_2eproto::offsets[] PROTOBUF_SECT
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
   PROTOBUF_FIELD_OFFSET(::tcp_io_device::StartMessage, _impl_.diagnosticmode_),
+  PROTOBUF_FIELD_OFFSET(::tcp_io_device::StartMessage, _impl_.reconnectiontype_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::tcp_io_device::StopMessage, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -283,15 +285,15 @@ const uint32_t TableStruct_tcp_5fdata_5fmessage_2eproto::offsets[] PROTOBUF_SECT
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, -1, sizeof(::tcp_io_device::TCPMessage)},
   { 13, -1, -1, sizeof(::tcp_io_device::StartMessage)},
-  { 20, -1, -1, sizeof(::tcp_io_device::StopMessage)},
-  { 26, 34, -1, sizeof(::tcp_io_device::SetupMessage_EntitiesEntry_DoNotUse)},
-  { 36, 44, -1, sizeof(::tcp_io_device::SetupMessage_ObjectsEntry_DoNotUse)},
-  { 46, 54, -1, sizeof(::tcp_io_device::SetupMessage_CommandsEntry_DoNotUse)},
-  { 56, -1, -1, sizeof(::tcp_io_device::SetupMessage)},
-  { 66, -1, -1, sizeof(::tcp_io_device::CommandDescription)},
-  { 74, -1, -1, sizeof(::tcp_io_device::DataMessage)},
-  { 82, -1, -1, sizeof(::tcp_io_device::VariableDescription)},
-  { 93, -1, -1, sizeof(::tcp_io_device::ProtoVariable)},
+  { 21, -1, -1, sizeof(::tcp_io_device::StopMessage)},
+  { 27, 35, -1, sizeof(::tcp_io_device::SetupMessage_EntitiesEntry_DoNotUse)},
+  { 37, 45, -1, sizeof(::tcp_io_device::SetupMessage_ObjectsEntry_DoNotUse)},
+  { 47, 55, -1, sizeof(::tcp_io_device::SetupMessage_CommandsEntry_DoNotUse)},
+  { 57, -1, -1, sizeof(::tcp_io_device::SetupMessage)},
+  { 67, -1, -1, sizeof(::tcp_io_device::CommandDescription)},
+  { 75, -1, -1, sizeof(::tcp_io_device::DataMessage)},
+  { 83, -1, -1, sizeof(::tcp_io_device::VariableDescription)},
+  { 94, -1, -1, sizeof(::tcp_io_device::ProtoVariable)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
@@ -310,44 +312,48 @@ static const ::_pb::Message* const file_default_instances[] = {
 
 const char descriptor_table_protodef_tcp_5fdata_5fmessage_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\026tcp_data_message.proto\022\rtcp_io_device\""
-  "\341\002\n\nTCPMessage\0223\n\013messageType\030\001 \001(\0162\036.tc"
+  "\360\002\n\nTCPMessage\0223\n\013messageType\030\001 \001(\0162\036.tc"
   "p_io_device.TCPMessage.Type\0223\n\014setupMess"
   "age\030\002 \001(\0132\033.tcp_io_device.SetupMessageH\000"
   "\0221\n\013dataMessage\030\003 \001(\0132\032.tcp_io_device.Da"
   "taMessageH\000\0223\n\014startMessage\030\004 \001(\0132\033.tcp_"
   "io_device.StartMessageH\000\0221\n\013stopMessage\030"
   "\005 \001(\0132\032.tcp_io_device.StopMessageH\000\022\021\n\tt"
-  "imestamp\030\006 \001(\004\"0\n\004Type\022\t\n\005SETUP\020\000\022\010\n\004DAT"
-  "A\020\001\022\t\n\005START\020\002\022\010\n\004STOP\020\003B\t\n\007message\"&\n\014S"
-  "tartMessage\022\026\n\016diagnosticMode\030\001 \001(\010\"\r\n\013S"
-  "topMessage\"\225\003\n\014SetupMessage\022;\n\010entities\030"
-  "\001 \003(\0132).tcp_io_device.SetupMessage.Entit"
-  "iesEntry\0229\n\007objects\030\002 \003(\0132(.tcp_io_devic"
-  "e.SetupMessage.ObjectsEntry\022;\n\010commands\030"
-  "\003 \003(\0132).tcp_io_device.SetupMessage.Comma"
-  "ndsEntry\022>\n\023commandDescriptions\030\004 \003(\0132!."
-  "tcp_io_device.CommandDescription\032/\n\rEnti"
-  "tiesEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\005:\0028"
-  "\001\032.\n\014ObjectsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030"
-  "\002 \001(\005:\0028\001\032/\n\rCommandsEntry\022\013\n\003key\030\001 \001(\t\022"
-  "\r\n\005value\030\002 \001(\005:\0028\001\"[\n\022CommandDescription"
-  "\0227\n\013description\030\001 \001(\0132\".tcp_io_device.Va"
-  "riableDescription\022\014\n\004name\030\002 \001(\t\"P\n\013DataM"
-  "essage\022/\n\tvariables\030\001 \003(\0132\034.tcp_io_devic"
-  "e.ProtoVariable\022\020\n\010timeSpan\030\002 \001(\004\"\376\001\n\023Va"
-  "riableDescription\022\020\n\010entityID\030\001 \001(\005\022\n\n\002I"
-  "D\030\002 \001(\005\022=\n\010dataType\030\003 \001(\0162+.tcp_io_devic"
-  "e.VariableDescription.DataType\022\022\n\ndimens"
-  "ions\030\004 \003(\004\022\034\n\024opcode_string_handle\030\005 \001(\t"
-  "\"X\n\010DataType\022\n\n\006DOUBLE\020\000\022\t\n\005INT64\020\003\022\010\n\004B"
-  "OOL\020\014\022\n\n\006STRING\020\r\022\t\n\005BYTES\020\016\022\024\n\020COMMUNIC"
-  "ATION_ID\020\017\"S\n\rProtoVariable\0224\n\010metaData\030"
-  "\001 \001(\0132\".tcp_io_device.VariableDescriptio"
-  "n\022\014\n\004data\030\002 \001(\014b\006proto3"
+  "imestamp\030\006 \001(\004\"\?\n\004Type\022\t\n\005SETUP\020\000\022\010\n\004DAT"
+  "A\020\001\022\t\n\005START\020\002\022\010\n\004STOP\020\003\022\r\n\tRECONNECT\020\004B"
+  "\t\n\007message\"\247\001\n\014StartMessage\022\026\n\016diagnosti"
+  "cMode\030\001 \001(\010\022F\n\020reconnectionType\030\002 \001(\0162,."
+  "tcp_io_device.StartMessage.ReconnectionT"
+  "ype\"7\n\020ReconnectionType\022\013\n\007RE_INIT\020\000\022\014\n\010"
+  "RE_SETUP\020\001\022\010\n\004NONE\020\002\"\r\n\013StopMessage\"\225\003\n\014"
+  "SetupMessage\022;\n\010entities\030\001 \003(\0132).tcp_io_"
+  "device.SetupMessage.EntitiesEntry\0229\n\007obj"
+  "ects\030\002 \003(\0132(.tcp_io_device.SetupMessage."
+  "ObjectsEntry\022;\n\010commands\030\003 \003(\0132).tcp_io_"
+  "device.SetupMessage.CommandsEntry\022>\n\023com"
+  "mandDescriptions\030\004 \003(\0132!.tcp_io_device.C"
+  "ommandDescription\032/\n\rEntitiesEntry\022\013\n\003ke"
+  "y\030\001 \001(\t\022\r\n\005value\030\002 \001(\005:\0028\001\032.\n\014ObjectsEnt"
+  "ry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\005:\0028\001\032/\n\rCo"
+  "mmandsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\005:"
+  "\0028\001\"[\n\022CommandDescription\0227\n\013description"
+  "\030\001 \001(\0132\".tcp_io_device.VariableDescripti"
+  "on\022\014\n\004name\030\002 \001(\t\"P\n\013DataMessage\022/\n\tvaria"
+  "bles\030\001 \003(\0132\034.tcp_io_device.ProtoVariable"
+  "\022\020\n\010timeSpan\030\002 \001(\004\"\376\001\n\023VariableDescripti"
+  "on\022\020\n\010entityID\030\001 \001(\005\022\n\n\002ID\030\002 \001(\005\022=\n\010data"
+  "Type\030\003 \001(\0162+.tcp_io_device.VariableDescr"
+  "iption.DataType\022\022\n\ndimensions\030\004 \003(\004\022\034\n\024o"
+  "pcode_string_handle\030\005 \001(\t\"X\n\010DataType\022\n\n"
+  "\006DOUBLE\020\000\022\t\n\005INT64\020\003\022\010\n\004BOOL\020\014\022\n\n\006STRING"
+  "\020\r\022\t\n\005BYTES\020\016\022\024\n\020COMMUNICATION_ID\020\017\"S\n\rP"
+  "rotoVariable\0224\n\010metaData\030\001 \001(\0132\".tcp_io_"
+  "device.VariableDescription\022\014\n\004data\030\002 \001(\014"
+  "b\006proto3"
   ;
 static ::_pbi::once_flag descriptor_table_tcp_5fdata_5fmessage_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_tcp_5fdata_5fmessage_2eproto = {
-    false, false, 1383, descriptor_table_protodef_tcp_5fdata_5fmessage_2eproto,
+    false, false, 1528, descriptor_table_protodef_tcp_5fdata_5fmessage_2eproto,
     "tcp_data_message.proto",
     &descriptor_table_tcp_5fdata_5fmessage_2eproto_once, nullptr, 0, 11,
     schemas, file_default_instances, TableStruct_tcp_5fdata_5fmessage_2eproto::offsets,
@@ -371,6 +377,7 @@ bool TCPMessage_Type_IsValid(int value) {
     case 1:
     case 2:
     case 3:
+    case 4:
       return true;
     default:
       return false;
@@ -382,13 +389,37 @@ constexpr TCPMessage_Type TCPMessage::SETUP;
 constexpr TCPMessage_Type TCPMessage::DATA;
 constexpr TCPMessage_Type TCPMessage::START;
 constexpr TCPMessage_Type TCPMessage::STOP;
+constexpr TCPMessage_Type TCPMessage::RECONNECT;
 constexpr TCPMessage_Type TCPMessage::Type_MIN;
 constexpr TCPMessage_Type TCPMessage::Type_MAX;
 constexpr int TCPMessage::Type_ARRAYSIZE;
 #endif  // (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* VariableDescription_DataType_descriptor() {
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* StartMessage_ReconnectionType_descriptor() {
   ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&descriptor_table_tcp_5fdata_5fmessage_2eproto);
   return file_level_enum_descriptors_tcp_5fdata_5fmessage_2eproto[1];
+}
+bool StartMessage_ReconnectionType_IsValid(int value) {
+  switch (value) {
+    case 0:
+    case 1:
+    case 2:
+      return true;
+    default:
+      return false;
+  }
+}
+
+#if (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
+constexpr StartMessage_ReconnectionType StartMessage::RE_INIT;
+constexpr StartMessage_ReconnectionType StartMessage::RE_SETUP;
+constexpr StartMessage_ReconnectionType StartMessage::NONE;
+constexpr StartMessage_ReconnectionType StartMessage::ReconnectionType_MIN;
+constexpr StartMessage_ReconnectionType StartMessage::ReconnectionType_MAX;
+constexpr int StartMessage::ReconnectionType_ARRAYSIZE;
+#endif  // (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* VariableDescription_DataType_descriptor() {
+  ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&descriptor_table_tcp_5fdata_5fmessage_2eproto);
+  return file_level_enum_descriptors_tcp_5fdata_5fmessage_2eproto[2];
 }
 bool VariableDescription_DataType_IsValid(int value) {
   switch (value) {
@@ -917,10 +948,13 @@ StartMessage::StartMessage(const StartMessage& from)
   StartMessage* const _this = this; (void)_this;
   new (&_impl_) Impl_{
       decltype(_impl_.diagnosticmode_){}
+    , decltype(_impl_.reconnectiontype_){}
     , /*decltype(_impl_._cached_size_)*/{}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  _this->_impl_.diagnosticmode_ = from._impl_.diagnosticmode_;
+  ::memcpy(&_impl_.diagnosticmode_, &from._impl_.diagnosticmode_,
+    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.reconnectiontype_) -
+    reinterpret_cast<char*>(&_impl_.diagnosticmode_)) + sizeof(_impl_.reconnectiontype_));
   // @@protoc_insertion_point(copy_constructor:tcp_io_device.StartMessage)
 }
 
@@ -930,6 +964,7 @@ inline void StartMessage::SharedCtor(
   (void)is_message_owned;
   new (&_impl_) Impl_{
       decltype(_impl_.diagnosticmode_){false}
+    , decltype(_impl_.reconnectiontype_){0}
     , /*decltype(_impl_._cached_size_)*/{}
   };
 }
@@ -957,7 +992,9 @@ void StartMessage::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  _impl_.diagnosticmode_ = false;
+  ::memset(&_impl_.diagnosticmode_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&_impl_.reconnectiontype_) -
+      reinterpret_cast<char*>(&_impl_.diagnosticmode_)) + sizeof(_impl_.reconnectiontype_));
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -972,6 +1009,15 @@ const char* StartMessage::_InternalParse(const char* ptr, ::_pbi::ParseContext* 
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
           _impl_.diagnosticmode_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // .tcp_io_device.StartMessage.ReconnectionType reconnectionType = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
+          uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+          _internal_set_reconnectiontype(static_cast<::tcp_io_device::StartMessage_ReconnectionType>(val));
         } else
           goto handle_unusual;
         continue;
@@ -1010,6 +1056,13 @@ uint8_t* StartMessage::_InternalSerialize(
     target = ::_pbi::WireFormatLite::WriteBoolToArray(1, this->_internal_diagnosticmode(), target);
   }
 
+  // .tcp_io_device.StartMessage.ReconnectionType reconnectionType = 2;
+  if (this->_internal_reconnectiontype() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteEnumToArray(
+      2, this->_internal_reconnectiontype(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -1029,6 +1082,12 @@ size_t StartMessage::ByteSizeLong() const {
   // bool diagnosticMode = 1;
   if (this->_internal_diagnosticmode() != 0) {
     total_size += 1 + 1;
+  }
+
+  // .tcp_io_device.StartMessage.ReconnectionType reconnectionType = 2;
+  if (this->_internal_reconnectiontype() != 0) {
+    total_size += 1 +
+      ::_pbi::WireFormatLite::EnumSize(this->_internal_reconnectiontype());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
@@ -1052,6 +1111,9 @@ void StartMessage::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::P
   if (from._internal_diagnosticmode() != 0) {
     _this->_internal_set_diagnosticmode(from._internal_diagnosticmode());
   }
+  if (from._internal_reconnectiontype() != 0) {
+    _this->_internal_set_reconnectiontype(from._internal_reconnectiontype());
+  }
   _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
 
@@ -1069,7 +1131,12 @@ bool StartMessage::IsInitialized() const {
 void StartMessage::InternalSwap(StartMessage* other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  swap(_impl_.diagnosticmode_, other->_impl_.diagnosticmode_);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(StartMessage, _impl_.reconnectiontype_)
+      + sizeof(StartMessage::_impl_.reconnectiontype_)
+      - PROTOBUF_FIELD_OFFSET(StartMessage, _impl_.diagnosticmode_)>(
+          reinterpret_cast<char*>(&_impl_.diagnosticmode_),
+          reinterpret_cast<char*>(&other->_impl_.diagnosticmode_));
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata StartMessage::GetMetadata() const {

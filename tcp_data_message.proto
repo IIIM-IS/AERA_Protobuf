@@ -8,6 +8,7 @@ message TCPMessage {
         DATA = 1;
         START = 2;
         STOP = 3;
+        RECONNECT = 4;
     }
     Type messageType = 1;
     oneof message {
@@ -20,7 +21,17 @@ message TCPMessage {
 }
 
 message StartMessage{
+    // Reconnectiontype defines the reconnection behavior of the external environmment.
+    // RE_INIT: Restarts the external environment and it sends out a new setup message.
+    // RE_SETUP: The external environment sends out a new setup message but remains in the state it is currently in.
+    // NONE: No further information is passed between AERA and the external environment.
+    enum ReconnectionType {
+        RE_INIT = 0;
+        RE_SETUP = 1;
+        NONE = 2;
+    }
     bool diagnosticMode = 1;
+    ReconnectionType reconnectionType = 2;
 }
 
 message StopMessage{
