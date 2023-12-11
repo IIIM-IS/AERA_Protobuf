@@ -104,12 +104,13 @@ enum TCPMessage_Type : int {
   TCPMessage_Type_DATA = 1,
   TCPMessage_Type_START = 2,
   TCPMessage_Type_STOP = 3,
+  TCPMessage_Type_RECONNECT = 4,
   TCPMessage_Type_TCPMessage_Type_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   TCPMessage_Type_TCPMessage_Type_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
 bool TCPMessage_Type_IsValid(int value);
 constexpr TCPMessage_Type TCPMessage_Type_Type_MIN = TCPMessage_Type_SETUP;
-constexpr TCPMessage_Type TCPMessage_Type_Type_MAX = TCPMessage_Type_STOP;
+constexpr TCPMessage_Type TCPMessage_Type_Type_MAX = TCPMessage_Type_RECONNECT;
 constexpr int TCPMessage_Type_Type_ARRAYSIZE = TCPMessage_Type_Type_MAX + 1;
 
 const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* TCPMessage_Type_descriptor();
@@ -125,6 +126,32 @@ inline bool TCPMessage_Type_Parse(
     ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, TCPMessage_Type* value) {
   return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<TCPMessage_Type>(
     TCPMessage_Type_descriptor(), name, value);
+}
+enum StartMessage_ReconnectionType : int {
+  StartMessage_ReconnectionType_RE_INIT = 0,
+  StartMessage_ReconnectionType_RE_SETUP = 1,
+  StartMessage_ReconnectionType_NONE = 2,
+  StartMessage_ReconnectionType_StartMessage_ReconnectionType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
+  StartMessage_ReconnectionType_StartMessage_ReconnectionType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
+};
+bool StartMessage_ReconnectionType_IsValid(int value);
+constexpr StartMessage_ReconnectionType StartMessage_ReconnectionType_ReconnectionType_MIN = StartMessage_ReconnectionType_RE_INIT;
+constexpr StartMessage_ReconnectionType StartMessage_ReconnectionType_ReconnectionType_MAX = StartMessage_ReconnectionType_NONE;
+constexpr int StartMessage_ReconnectionType_ReconnectionType_ARRAYSIZE = StartMessage_ReconnectionType_ReconnectionType_MAX + 1;
+
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* StartMessage_ReconnectionType_descriptor();
+template<typename T>
+inline const std::string& StartMessage_ReconnectionType_Name(T enum_t_value) {
+  static_assert(::std::is_same<T, StartMessage_ReconnectionType>::value ||
+    ::std::is_integral<T>::value,
+    "Incorrect type passed to function StartMessage_ReconnectionType_Name.");
+  return ::PROTOBUF_NAMESPACE_ID::internal::NameOfEnum(
+    StartMessage_ReconnectionType_descriptor(), enum_t_value);
+}
+inline bool StartMessage_ReconnectionType_Parse(
+    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, StartMessage_ReconnectionType* value) {
+  return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<StartMessage_ReconnectionType>(
+    StartMessage_ReconnectionType_descriptor(), name, value);
 }
 enum VariableDescription_DataType : int {
   VariableDescription_DataType_DOUBLE = 0,
@@ -292,6 +319,8 @@ class TCPMessage final :
     TCPMessage_Type_START;
   static constexpr Type STOP =
     TCPMessage_Type_STOP;
+  static constexpr Type RECONNECT =
+    TCPMessage_Type_RECONNECT;
   static inline bool Type_IsValid(int value) {
     return TCPMessage_Type_IsValid(value);
   }
@@ -571,10 +600,43 @@ class StartMessage final :
 
   // nested types ----------------------------------------------------
 
+  typedef StartMessage_ReconnectionType ReconnectionType;
+  static constexpr ReconnectionType RE_INIT =
+    StartMessage_ReconnectionType_RE_INIT;
+  static constexpr ReconnectionType RE_SETUP =
+    StartMessage_ReconnectionType_RE_SETUP;
+  static constexpr ReconnectionType NONE =
+    StartMessage_ReconnectionType_NONE;
+  static inline bool ReconnectionType_IsValid(int value) {
+    return StartMessage_ReconnectionType_IsValid(value);
+  }
+  static constexpr ReconnectionType ReconnectionType_MIN =
+    StartMessage_ReconnectionType_ReconnectionType_MIN;
+  static constexpr ReconnectionType ReconnectionType_MAX =
+    StartMessage_ReconnectionType_ReconnectionType_MAX;
+  static constexpr int ReconnectionType_ARRAYSIZE =
+    StartMessage_ReconnectionType_ReconnectionType_ARRAYSIZE;
+  static inline const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor*
+  ReconnectionType_descriptor() {
+    return StartMessage_ReconnectionType_descriptor();
+  }
+  template<typename T>
+  static inline const std::string& ReconnectionType_Name(T enum_t_value) {
+    static_assert(::std::is_same<T, ReconnectionType>::value ||
+      ::std::is_integral<T>::value,
+      "Incorrect type passed to function ReconnectionType_Name.");
+    return StartMessage_ReconnectionType_Name(enum_t_value);
+  }
+  static inline bool ReconnectionType_Parse(::PROTOBUF_NAMESPACE_ID::ConstStringParam name,
+      ReconnectionType* value) {
+    return StartMessage_ReconnectionType_Parse(name, value);
+  }
+
   // accessors -------------------------------------------------------
 
   enum : int {
     kDiagnosticModeFieldNumber = 1,
+    kReconnectionTypeFieldNumber = 2,
   };
   // bool diagnosticMode = 1;
   void clear_diagnosticmode();
@@ -583,6 +645,15 @@ class StartMessage final :
   private:
   bool _internal_diagnosticmode() const;
   void _internal_set_diagnosticmode(bool value);
+  public:
+
+  // .tcp_io_device.StartMessage.ReconnectionType reconnectionType = 2;
+  void clear_reconnectiontype();
+  ::tcp_io_device::StartMessage_ReconnectionType reconnectiontype() const;
+  void set_reconnectiontype(::tcp_io_device::StartMessage_ReconnectionType value);
+  private:
+  ::tcp_io_device::StartMessage_ReconnectionType _internal_reconnectiontype() const;
+  void _internal_set_reconnectiontype(::tcp_io_device::StartMessage_ReconnectionType value);
   public:
 
   // @@protoc_insertion_point(class_scope:tcp_io_device.StartMessage)
@@ -594,6 +665,7 @@ class StartMessage final :
   typedef void DestructorSkippable_;
   struct Impl_ {
     bool diagnosticmode_;
+    int reconnectiontype_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -2167,6 +2239,26 @@ inline void StartMessage::set_diagnosticmode(bool value) {
   // @@protoc_insertion_point(field_set:tcp_io_device.StartMessage.diagnosticMode)
 }
 
+// .tcp_io_device.StartMessage.ReconnectionType reconnectionType = 2;
+inline void StartMessage::clear_reconnectiontype() {
+  _impl_.reconnectiontype_ = 0;
+}
+inline ::tcp_io_device::StartMessage_ReconnectionType StartMessage::_internal_reconnectiontype() const {
+  return static_cast< ::tcp_io_device::StartMessage_ReconnectionType >(_impl_.reconnectiontype_);
+}
+inline ::tcp_io_device::StartMessage_ReconnectionType StartMessage::reconnectiontype() const {
+  // @@protoc_insertion_point(field_get:tcp_io_device.StartMessage.reconnectionType)
+  return _internal_reconnectiontype();
+}
+inline void StartMessage::_internal_set_reconnectiontype(::tcp_io_device::StartMessage_ReconnectionType value) {
+  
+  _impl_.reconnectiontype_ = value;
+}
+inline void StartMessage::set_reconnectiontype(::tcp_io_device::StartMessage_ReconnectionType value) {
+  _internal_set_reconnectiontype(value);
+  // @@protoc_insertion_point(field_set:tcp_io_device.StartMessage.reconnectionType)
+}
+
 // -------------------------------------------------------------------
 
 // StopMessage
@@ -2855,6 +2947,11 @@ template <> struct is_proto_enum< ::tcp_io_device::TCPMessage_Type> : ::std::tru
 template <>
 inline const EnumDescriptor* GetEnumDescriptor< ::tcp_io_device::TCPMessage_Type>() {
   return ::tcp_io_device::TCPMessage_Type_descriptor();
+}
+template <> struct is_proto_enum< ::tcp_io_device::StartMessage_ReconnectionType> : ::std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::tcp_io_device::StartMessage_ReconnectionType>() {
+  return ::tcp_io_device::StartMessage_ReconnectionType_descriptor();
 }
 template <> struct is_proto_enum< ::tcp_io_device::VariableDescription_DataType> : ::std::true_type {};
 template <>

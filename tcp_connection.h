@@ -223,18 +223,27 @@ namespace tcp_io_device {
       STOPPED = 2,
     }State;
 
-    State state_;
+    typedef enum {
+      CLIENT = 0,
+      SERVER = 1,
+    }SocketType;
 
+    State state_;
+    SocketType socket_type_;
 
     std::shared_ptr<std::thread> tcp_background_thread_;
 
     SOCKET tcp_socket_;
+    SOCKET server_listen_socket_;
 
     uint64_t msg_buf_size_;
     uint64_t msg_length_buf_size_;
 
     std::shared_ptr<SafeQueue> incoming_queue_;
     std::shared_ptr<SafeQueue> outgoing_queue_;
+
+    std::string host_;
+    std::string port_;
 
     /**
     * Handles the TCP connection in the background by checking for new outgoing and incoming messages, dequeueing and enqueueing the
