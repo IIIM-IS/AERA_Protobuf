@@ -5,8 +5,10 @@ Install protobuf using vcpkg.
 ### Install vcpkg:
 Follow the instructions on the [official Microsoft website](https://docs.microsoft.com/en-us/cpp/build/install-vcpkg?view=msvc-160&tabs=windows) to install vcpkg. In short:
 
- 1. Clone locally from [https://github.com/Microsoft/vcpkg](https://github.com/Microsoft/vcpkg). It is known to make problems, if there are spaces in the path to vcpkg. So I suggest installing it somewhere like `C:\Users\<username>\vcpkg\`. So for example:
- `C:\Users\Username> git clone https://github.com/Microsoft/vcpkg`
+ 1. Clone locally from [https://github.com/Microsoft/vcpkg](https://github.com/Microsoft/vcpkg). It is known to make problems, if there are spaces in the path to vcpkg. So I suggest installing it somewhere like `C:\Users\<username>\vcpkg\`. So for example:  
+```
+C:\Users\Username> git clone https://github.com/Microsoft/vcpkg
+```
  2. Change to `vcpkg` directory:
   `C:\Users\Username> cd vcpkg`
   3. In the vcpkg root directory, run the vcpkg bootstrapper command:
