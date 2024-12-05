@@ -214,20 +214,20 @@ namespace tcp_io_device {
     host_ = host;
     port_ = port;
 
-    WSADATA wsaData;
     struct addrinfo* result = NULL, hints;
 
     int err;
 
     // Initialize Winsock
     std::cout << "> INFO: Initializing Winsock" << std::endl;
+    WSADATA wsaData;
     err = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (err != 0) {
       std::cout << "ERROR: WSAStartup failed with error: " << err << std::endl;
       return 1;
     }
 
-    ZeroMemory(&hints, sizeof(hints));
+    memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
@@ -257,7 +257,7 @@ namespace tcp_io_device {
     while (true) {
       std::cout << "Trying to connect to " << host << ":" << port << std::endl;
       err = connect(tcp_socket_, result->ai_addr, (int)result->ai_addrlen);
-      if (err != SOCKET_ERROR) {
+      if (err == 0) {
         break;
       }
       std::cout << "Failed to connect to server with error: " << getLastError() << std::endl;
@@ -489,18 +489,21 @@ namespace tcp_io_device {
 
   int TCPConnection::receiveIsReady(SOCKET fd)
   {
+    if (!isValidSocket(fd))
+      // The socket is not open. Just silently return.
+      return 0;
+
     timeval tv{ 0, 0 };
-    int rc = 0;
     FD_SET tcp_client_fd_set;
     FD_ZERO(&tcp_client_fd_set);
     FD_SET(fd, &tcp_client_fd_set);
-    rc = ::select(fd + 1, &tcp_client_fd_set, NULL, NULL, &tv);
+    int rc = ::select(fd + 1, &tcp_client_fd_set, NULL, NULL, &tv);
+    if (rc < 0) {
+      return -1;
+    }
     if (rc == 0) {
       // No messages on the socket.
       return 0;
-    }
-    else if (rc == SOCKET_ERROR) {
-      return -1;
     }
 
     return 1;
