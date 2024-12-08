@@ -288,15 +288,6 @@ namespace tcp_io_device {
       setData(data_string);
     }
 
-    template<>
-    void setData<char>(std::vector<char> data) {
-      std::string data_string;
-      for (auto it = data.begin(); it != data.end(); ++it) {
-        data_string.append(&(*it));
-      }
-      setData(data_string);
-    }
-
     /**
     * Returns the MetaData object corresponding to this MsgData.
     */
@@ -317,13 +308,6 @@ namespace tcp_io_device {
         memcpy(&a, pos, sizeof(T));
         values.push_back(a);
       }
-      return values;
-    }
-
-    template<>
-    std::vector<std::string> getData() {
-      std::vector<std::string> values;
-      values.push_back(data_);
       return values;
     }
 
