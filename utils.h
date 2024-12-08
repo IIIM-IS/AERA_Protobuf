@@ -273,16 +273,17 @@ namespace tcp_io_device {
     * Setter for the data of the message. Data is stored as a byte representation in form of a std::string.
     * \param d The byte representation of the data in form of a std::string.
     */
-    void setData(std::string d) {
+    void setData(const std::string& d) {
       data_ = d;
     }
 
     template<typename T>
-    void setData(std::vector<T> data) {
+    void setData(const std::vector<T>& data) {
       std::string data_string;
       for (auto it = data.begin(); it != data.end(); ++it) {
         char data_char[sizeof(T)];
-        memcpy(data_char, &(*it), sizeof(T));
+        T value = *it;
+        memcpy(data_char, &value, sizeof(T));
         data_string.append(std::string(data_char, sizeof(T)));
       }
       setData(data_string);
