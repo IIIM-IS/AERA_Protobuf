@@ -60,9 +60,11 @@
 #include <queue>
 #include <mutex>
 #include <condition_variable>
+#if defined(_WIN32)
 #include <winsock2.h>
 #include <windows.h>
 #include <ws2tcpip.h>
+#endif
 #include <string>
 #include <stdlib.h>
 #include <stdio.h>
@@ -213,7 +215,11 @@ namespace tcp_io_device {
     * \param fd The socket file descriptor.
     * \return 1 if data is ready, 0 if no data is ready, -1 for error.
     */
+#if defined(_WIN32)
     static int receiveIsReady(SOCKET fd);
+#else
+    static int receiveIsReady(int fd);
+#endif
 
   protected:
 
@@ -233,8 +239,13 @@ namespace tcp_io_device {
 
     std::shared_ptr<std::thread> tcp_background_thread_;
 
+#if defined(_WIN32)
     SOCKET tcp_socket_;
     SOCKET server_listen_socket_;
+#else
+    int tcp_socket_;
+    int server_listen_socket_;
+#endif
 
     uint64_t msg_buf_size_;
     uint64_t msg_length_buf_size_;
