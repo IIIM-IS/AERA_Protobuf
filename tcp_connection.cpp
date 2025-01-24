@@ -55,7 +55,57 @@
 
 #ifdef ENABLE_PROTOBUF
 
+#if !defined(_WIN32)
+#include <errno.h>
+#include <unistd.h>
+#include <netdb.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <arpa/inet.h>
+#include <poll.h>
+#endif
+
 #include "tcp_connection.h"
+
+/**
+ * Check if sock is a valid socket. We need this utility function to handle
+ * Windows and non-Windows error codes.
+ * \param sock The socket descriptor to check.
+ * \return True if sock is valid.
+ */
+static bool
+#if defined(_WIN32)
+isValidSocket(const SOCKET sock) { return sock != INVALID_SOCKET; }
+#else
+isValidSocket(const int sock) { return sock >= 0; }
+#endif
+
+/**
+ * Set sock to the value of an invalid socket. We need this utility function to 
+ * handle Windows and non-Windows error codes.
+ * \param sock The socket descriptor to set.
+ */
+static void
+#if defined(_WIN32)
+setSocketInvalid(SOCKET &sock) { sock = INVALID_SOCKET; }
+#else
+setSocketInvalid(int &sock) { sock = -1; }
+#endif
+
+/**
+ * Return the error number which is set when a socket functions returns failure.
+ * \return The error number.
+ */
+static int getLastError()
+{
+#if defined(_WIN32)
+  return WSAGetLastError();
+#else
+  return errno;
+#endif
+}
 
 namespace tcp_io_device {
 
@@ -65,8 +115,8 @@ namespace tcp_io_device {
     incoming_queue_ = receive_queue;
     msg_length_buf_size_ = msg_length_buf_size;
     state_ = NOT_STARTED;
-    tcp_socket_ = INVALID_SOCKET;
-    server_listen_socket_ = INVALID_SOCKET;
+    setSocketInvalid(tcp_socket_);
+    setSocketInvalid(server_listen_socket_);
   }
 
   TCPConnection::~TCPConnection()
@@ -76,13 +126,21 @@ namespace tcp_io_device {
     // Wait for the background thread to join and close the socket, if necessary
     state_ = STOPPED;
     tcp_background_thread_->join();
-    if (tcp_socket_ != INVALID_SOCKET) {
+    if (isValidSocket(tcp_socket_)) {
+#if defined(_WIN32)
       int err = shutdown(tcp_socket_, SD_BOTH);
+#else
+      int err = shutdown(tcp_socket_, SHUT_WR);
+#endif
       if (err != 0) {
-        std::cout << "ERROR: Shutdown of Client Socket failed with error: " << err << std::endl;
+        std::cout << "ERROR: Shutdown of Client Socket failed with error: " << getLastError() << std::endl;
       }
+#if defined(_WIN32)
       closesocket(tcp_socket_);
       WSACleanup();
+#else
+      close(tcp_socket_);
+#endif
     }
   }
 
@@ -90,6 +148,7 @@ namespace tcp_io_device {
   {
     port_ = port;
 
+#if defined(_WIN32)
     WSADATA wsa_data;
     int err;
 
@@ -120,8 +179,8 @@ namespace tcp_io_device {
 
     // Create a SOCKET for connecting to client
     server_listen_socket_ = ::socket(result->ai_family, result->ai_socktype, result->ai_protocol);
-    if (server_listen_socket_ == INVALID_SOCKET) {
-      std::cout << "ERROR: Socker failed with error: " << WSAGetLastError() << std::endl;
+    if (!isValidSocket(server_listen_socket_)) {
+      std::cout << "ERROR: Socker failed with error: " << getLastError() << std::endl;
       freeaddrinfo(result);
       WSACleanup();
       return 1;
@@ -131,7 +190,7 @@ namespace tcp_io_device {
     // Setup the TCP listening socket
     err = ::bind(server_listen_socket_, result->ai_addr, (int)result->ai_addrlen);
     if (err == SOCKET_ERROR) {
-      std::cout << "ERROR: Bind failed with error: " << WSAGetLastError() << std::endl;
+      std::cout << "ERROR: Bind failed with error: " << getLastError() << std::endl;
       freeaddrinfo(result);
       closesocket(server_listen_socket_);
       WSACleanup();
@@ -143,7 +202,7 @@ namespace tcp_io_device {
     // Wait for a client to conenct to the socket.
     err = listen(server_listen_socket_, SOMAXCONN);
     if (err == SOCKET_ERROR) {
-      std::cout << "ERROR: Listen failed with error: " << WSAGetLastError() << std::endl;
+      std::cout << "ERROR: Listen failed with error: " << getLastError() << std::endl;
       closesocket(server_listen_socket_);
       WSACleanup();
       return 1;
@@ -153,8 +212,8 @@ namespace tcp_io_device {
     std::cout << "> INFO: Waiting to accept client socket on port " << port << std::endl;
     // Accept a client socket
     tcp_socket_ = ::accept(server_listen_socket_, NULL, NULL);
-    if (tcp_socket_ == INVALID_SOCKET) {
-      std::cout << "ERROR: Accepting client failed with error: " << WSAGetLastError() << std::endl;
+    if (!isValidSocket(tcp_socket_)) {
+      std::cout << "ERROR: Accepting client failed with error: " << getLastError() << std::endl;
       closesocket(server_listen_socket_);
       WSACleanup();
       return 1;
@@ -163,6 +222,10 @@ namespace tcp_io_device {
     std::cout << "> INFO: TCP connection successfully established" << std::endl;
 
     socket_type_ = SERVER;
+#else
+    std::cout << "TODO: Implement TCPConnection::listenAndAwaitConnection for non-Windows" << std::endl;
+    return 1;
+#endif
 
     return 0;
   }
@@ -172,20 +235,22 @@ namespace tcp_io_device {
     host_ = host;
     port_ = port;
 
-    WSADATA wsaData;
     struct addrinfo* result = NULL, hints;
 
     int err;
 
+#if defined(_WIN32)
     // Initialize Winsock
     std::cout << "> INFO: Initializing Winsock" << std::endl;
+    WSADATA wsaData;
     err = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (err != 0) {
       std::cout << "ERROR: WSAStartup failed with error: " << err << std::endl;
       return 1;
     }
+#endif
 
-    ZeroMemory(&hints, sizeof(hints));
+    memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
@@ -196,17 +261,21 @@ namespace tcp_io_device {
     err = getaddrinfo(host.c_str(), port.c_str(), &hints, &result);
     if (err != 0) {
       std::cout << "ERROR: getaddrinfo failed with error: " << err << std::endl;
+#if defined(_WIN32)
       WSACleanup();
+#endif
       return 1;
     }
 
     std::cout << "> INFO: Creating socket for connection to server" << std::endl;
     // Create a SOCKET for connecting to server
     tcp_socket_ = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
-    if (tcp_socket_ == INVALID_SOCKET) {
-      std::cout << "ERROR: Socker failed with error: " << WSAGetLastError() << std::endl;
+    if (!isValidSocket(tcp_socket_)) {
+      std::cout << "ERROR: Socker failed with error: " << getLastError() << std::endl;
       freeaddrinfo(result);
+#if defined(_WIN32)
       WSACleanup();
+#endif
       return 1;
     }
 
@@ -215,19 +284,23 @@ namespace tcp_io_device {
     while (true) {
       std::cout << "Trying to connect to " << host << ":" << port << std::endl;
       err = connect(tcp_socket_, result->ai_addr, (int)result->ai_addrlen);
-      if (err != SOCKET_ERROR) {
+      if (err == 0) {
         break;
       }
-      std::cout << "Failed to connect to server with error: " << WSAGetLastError() << std::endl;
+      std::cout << "Failed to connect to server with error: " << getLastError() << std::endl;
       std::cout << "Trying to reconnect in 1 sec..." << std::endl;
       std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
 
     freeaddrinfo(result);
 
-    if (tcp_socket_ == INVALID_SOCKET) {
+    if (!isValidSocket(tcp_socket_)) {
       printf("Unable to connect to server!\n");
+#if defined(_WIN32)
       WSACleanup();
+#else
+      close(tcp_socket_);
+#endif
       return 1;
     }
 
@@ -257,13 +330,13 @@ namespace tcp_io_device {
 
     int error_code = 0;
     while (state_ == RUNNING) {
-      if (tcp_socket_ == INVALID_SOCKET) {
+      if (!isValidSocket(tcp_socket_)) {
         std::cout << "WARNING: Lost TCP connection. Trying to reconnect." << std::endl;
         error_code = 0;
         switch (socket_type_)
         {
         case SERVER:
-          if (server_listen_socket_ == INVALID_SOCKET) {
+          if (!isValidSocket(server_listen_socket_)) {
             error_code = listenAndAwaitConnection(port_);
             break;
           }
@@ -276,9 +349,9 @@ namespace tcp_io_device {
         default:
           break;
         }
-        if (error_code != 0 || tcp_socket_ == INVALID_SOCKET)
+        if (error_code != 0 || !isValidSocket(tcp_socket_))
         {
-          std::cout << "Unable to reconnect... Error: " << WSAGetLastError() << " Retrying in 1 sec..." << std::endl;
+          std::cout << "Unable to reconnect... Error: " << getLastError() << " Retrying in 1 sec..." << std::endl;
           std::this_thread::sleep_for(std::chrono::milliseconds(1000));
           continue;
         }
@@ -311,10 +384,10 @@ namespace tcp_io_device {
         }
         else if (ready < 0) {
           // Something went wrong when receiving the message, break the handler, end the thread.
-          std::cout << "select() == SOCKET_ERROR error: " << WSAGetLastError() << std::endl;
+          std::cout << "select() == SOCKET_ERROR error: " << getLastError() << std::endl;
           // got_error = true;
           //closesocket(tcp_socket_);
-          tcp_socket_ = INVALID_SOCKET;
+          setSocketInvalid(tcp_socket_);
           break;
         }
         auto in_msg = receiveMessage();
@@ -322,7 +395,7 @@ namespace tcp_io_device {
           // Something went wrong when receiving the message, break the handler, end the thread.
           // got_error = true;
           //closesocket(tcp_socket_);
-          tcp_socket_ = INVALID_SOCKET;
+          setSocketInvalid(tcp_socket_);
           break;
         }
 
@@ -337,15 +410,23 @@ namespace tcp_io_device {
     outgoing_queue_->clear();
 
     // Close the socket
-    if (tcp_socket_ != INVALID_SOCKET) {
+    if (isValidSocket(tcp_socket_)) {
+#if defined(_WIN32)
       int err = shutdown(tcp_socket_, SD_SEND);
+#else
+      int err = shutdown(tcp_socket_, SHUT_WR);
+#endif
       if (err != 0) {
-        std::cout << "ERROR: Shutdown of Client Socket failed with error: " << err << std::endl;
+        std::cout << "ERROR: Shutdown of Client Socket failed with error: " << getLastError() << std::endl;
       }
+#if defined(_WIN32)
       closesocket(tcp_socket_);
       WSACleanup();
+#else
+      close(tcp_socket_);
+#endif
     }
-    tcp_socket_ = INVALID_SOCKET;
+    setSocketInvalid(tcp_socket_);
   }
 
   std::unique_ptr<TCPMessage> TCPConnection::receiveMessage()
@@ -374,8 +455,13 @@ namespace tcp_io_device {
       }
       else {
         // Error occured during receiving
-        std::cout << "recv failed during recv of data length with error: " << WSAGetLastError() << std::endl;
+        std::cout << "recv failed during recv of data length with error: " << getLastError() << std::endl;
+#if defined(_WIN32)
         closesocket(tcp_socket_);
+        WSACleanup();
+#else
+        close(tcp_socket_);
+#endif
         return NULL;
       }
     }
@@ -402,7 +488,7 @@ namespace tcp_io_device {
         return NULL;
       }
       else {
-        std::cout << "recv failed during recv of data message with error: " << WSAGetLastError() << std::endl;
+        std::cout << "recv failed during recv of data message with error: " << getLastError() << std::endl;
         return NULL;
       }
     }
@@ -428,7 +514,7 @@ namespace tcp_io_device {
     // First put the length of the message in the first 8 bytes of the output stream
     std::string out_buffer = "";
     for (int i = 0; i < 8; ++i) {
-      out_buffer += unsigned char((int)(((uint64_t)out.size() >> (i * 8)) & 0xFF));
+      out_buffer += (unsigned char)((int)(((uint64_t)out.size() >> (i * 8)) & 0xFF));
     }
 
     // Attach the serialized message to the byte-stream
@@ -436,30 +522,54 @@ namespace tcp_io_device {
 
     // Send message length + message through the socket.
     int i_send_result = ::send(tcp_socket_, &out_buffer[0], out_buffer.size(), 0);
-    if (i_send_result == SOCKET_ERROR) {
-      std::cout << "SendMessage failed with error: " << WSAGetLastError() << std::endl;
+    if (i_send_result < 0) {
+      std::cout << "SendMessage failed with error: " << getLastError() << std::endl;
+#if defined(_WIN32)
       closesocket(tcp_socket_);
       WSACleanup();
+#else
+      close(tcp_socket_);
+#endif
     }
 
     return i_send_result;
   }
 
+#if defined(_WIN32)
   int TCPConnection::receiveIsReady(SOCKET fd)
+#else
+  int TCPConnection::receiveIsReady(int fd)
+#endif
   {
+    if (!isValidSocket(fd))
+      // The socket is not open. Just silently return.
+      return 0;
+
+#if defined(_WIN32)
     timeval tv{ 0, 0 };
-    int rc = 0;
     FD_SET tcp_client_fd_set;
     FD_ZERO(&tcp_client_fd_set);
     FD_SET(fd, &tcp_client_fd_set);
-    rc = ::select(fd + 1, &tcp_client_fd_set, NULL, NULL, &tv);
+    int rc = ::select(fd + 1, &tcp_client_fd_set, NULL, NULL, &tv);
+#else
+    struct pollfd pollInfo[1];
+    pollInfo[0].fd = fd;
+    pollInfo[0].events = POLLIN;
+    int rc = ::poll(pollInfo, 1, 0);
+#endif
+    if (rc < 0) {
+      return -1;
+    }
     if (rc == 0) {
       // No messages on the socket.
       return 0;
     }
-    else if (rc == SOCKET_ERROR) {
-      return -1;
+#if !defined(_WIN32)
+    if (!(pollInfo[0].revents & POLLIN)) {
+      // No POLLIN flag.
+      return 0;
     }
+#endif
 
     return 1;
   }
