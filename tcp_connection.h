@@ -70,6 +70,7 @@
 #include <stdio.h>
 #include <thread>
 #include <bitset>
+#include <google/protobuf/util/json_util.h>
 
 #include "tcp_data_message.pb.h"
 

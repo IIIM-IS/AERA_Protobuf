@@ -58,6 +58,8 @@
 #include <iostream>
 #include <iomanip>
 #include "tcp_data_message.pb.h"
+#include "../../controllers/hand_grab_sphere_UR_3D_controller/str_base.h"
+#include <typeinfo>
 
 using communication_id_t = int64_t;
 
@@ -304,11 +306,17 @@ namespace tcp_io_device {
     template <typename T> std::vector<T> getData() {
       T a;
       std::vector<T> values;
-      for (int i = 0; i < data_.size(); i += sizeof(T)) {
-        char* pos = &data_[i];
+      std::string rebased_data = data_;
+      auto debug = macaron::Base64::Decode(data_, rebased_data);
+
+      std::reverse(rebased_data.begin(), rebased_data.end());
+
+      for (int i = 0; i < rebased_data.size(); i += sizeof(T)) {
+        char* pos = &rebased_data[i];
         memcpy(&a, pos, sizeof(T));
         values.push_back(a);
       }
+      std::reverse(values.begin(), values.end());
       return values;
     }
 

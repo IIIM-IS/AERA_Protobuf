@@ -493,11 +493,30 @@ namespace tcp_io_device {
       }
     }
 
+    //std::cout << "Test: buffer in receive:" << buf << std::endl;
+
+    /*
+    TCPMessage tmp_message;
+    google::protobuf::util::JsonStringToMessage(buf, &tmp_message);
+    std::unique_ptr<TCPMessage> msg = std::make_unique<TCPMessage>(tmp_message);
+    return msg;
+    */
+
     // Parse the byte-stream into a TCPMessage
     std::unique_ptr<TCPMessage> msg = std::make_unique<TCPMessage>();
     if (!msg->ParseFromArray(buf, msg_len)) {
       std::cout << "ERROR: Parsing Message from String failed" << std::endl;
       return NULL;
+    }
+
+    std::cout << "Received Message: " << msg->messagetype() << std::endl;
+    if (msg->messagetype() == TCPMessage::DATA)
+    {
+      for (size_t i = 0; i < msg->datamessage().variables()[0].data().length(); i++)
+      {
+        std::cout << std::hex << (int)msg->datamessage().variables()[0].data()[i];
+      }
+      std::cout << std::dec << std::endl;
     }
 
     delete[] buf;
@@ -509,7 +528,18 @@ namespace tcp_io_device {
   {
     // Serialize the TCPMessage
     std::string out;
-    out = msg->SerializeAsString();
+    auto m = *msg.get();
+    google::protobuf::util::MessageToJsonString(m, &out);
+    //if (msg->messagetype() == TCPMessage::DATA)
+    //{
+    //  for (size_t i = 0; i < msg->datamessage().variables()[0].data().length(); i++)
+    //  {
+    //    std::cout << std::hex << (int)msg->datamessage().variables()[0].data()[i];
+    //  }
+    //  std::cout << std::dec << std::endl;
+    //}
+    //std::cout << out << std::endl;
+    //out = msg->SerializeAsString();
 
     // First put the length of the message in the first 8 bytes of the output stream
     std::string out_buffer = "";
@@ -519,6 +549,8 @@ namespace tcp_io_device {
 
     // Attach the serialized message to the byte-stream
     out_buffer += out;
+
+    // std::cout << "JSON working? " << out << std::endl;
 
     // Send message length + message through the socket.
     int i_send_result = ::send(tcp_socket_, &out_buffer[0], out_buffer.size(), 0);
