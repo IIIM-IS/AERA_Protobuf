@@ -56,6 +56,9 @@ extern CommandDescriptionDefaultTypeInternal _CommandDescription_default_instanc
 class DataMessage;
 struct DataMessageDefaultTypeInternal;
 extern DataMessageDefaultTypeInternal _DataMessage_default_instance_;
+class GoalMessage;
+struct GoalMessageDefaultTypeInternal;
+extern GoalMessageDefaultTypeInternal _GoalMessage_default_instance_;
 class ProtoVariable;
 struct ProtoVariableDefaultTypeInternal;
 extern ProtoVariableDefaultTypeInternal _ProtoVariable_default_instance_;
@@ -87,6 +90,7 @@ extern VariableDescriptionDefaultTypeInternal _VariableDescription_default_insta
 PROTOBUF_NAMESPACE_OPEN
 template<> ::tcp_io_device::CommandDescription* Arena::CreateMaybeMessage<::tcp_io_device::CommandDescription>(Arena*);
 template<> ::tcp_io_device::DataMessage* Arena::CreateMaybeMessage<::tcp_io_device::DataMessage>(Arena*);
+template<> ::tcp_io_device::GoalMessage* Arena::CreateMaybeMessage<::tcp_io_device::GoalMessage>(Arena*);
 template<> ::tcp_io_device::ProtoVariable* Arena::CreateMaybeMessage<::tcp_io_device::ProtoVariable>(Arena*);
 template<> ::tcp_io_device::SetupMessage* Arena::CreateMaybeMessage<::tcp_io_device::SetupMessage>(Arena*);
 template<> ::tcp_io_device::SetupMessage_CommandsEntry_DoNotUse* Arena::CreateMaybeMessage<::tcp_io_device::SetupMessage_CommandsEntry_DoNotUse>(Arena*);
@@ -104,7 +108,8 @@ enum TCPMessage_Type : int {
   TCPMessage_Type_DATA = 1,
   TCPMessage_Type_START = 2,
   TCPMessage_Type_STOP = 3,
-  TCPMessage_Type_RECONNECT = 4,
+  TCPMessage_Type_GOAL = 4,
+  TCPMessage_Type_RECONNECT = 5,
   TCPMessage_Type_TCPMessage_Type_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   TCPMessage_Type_TCPMessage_Type_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
@@ -232,6 +237,7 @@ class TCPMessage final :
     kDataMessage = 3,
     kStartMessage = 4,
     kStopMessage = 5,
+    kGoalMessage = 7,
     MESSAGE_NOT_SET = 0,
   };
 
@@ -319,6 +325,8 @@ class TCPMessage final :
     TCPMessage_Type_START;
   static constexpr Type STOP =
     TCPMessage_Type_STOP;
+  static constexpr Type GOAL =
+    TCPMessage_Type_GOAL;
   static constexpr Type RECONNECT =
     TCPMessage_Type_RECONNECT;
   static inline bool Type_IsValid(int value) {
@@ -355,6 +363,7 @@ class TCPMessage final :
     kDataMessageFieldNumber = 3,
     kStartMessageFieldNumber = 4,
     kStopMessageFieldNumber = 5,
+    kGoalMessageFieldNumber = 7,
   };
   // uint64 timestamp = 6;
   void clear_timestamp();
@@ -446,6 +455,24 @@ class TCPMessage final :
       ::tcp_io_device::StopMessage* stopmessage);
   ::tcp_io_device::StopMessage* unsafe_arena_release_stopmessage();
 
+  // .tcp_io_device.GoalMessage goalMessage = 7;
+  bool has_goalmessage() const;
+  private:
+  bool _internal_has_goalmessage() const;
+  public:
+  void clear_goalmessage();
+  const ::tcp_io_device::GoalMessage& goalmessage() const;
+  PROTOBUF_NODISCARD ::tcp_io_device::GoalMessage* release_goalmessage();
+  ::tcp_io_device::GoalMessage* mutable_goalmessage();
+  void set_allocated_goalmessage(::tcp_io_device::GoalMessage* goalmessage);
+  private:
+  const ::tcp_io_device::GoalMessage& _internal_goalmessage() const;
+  ::tcp_io_device::GoalMessage* _internal_mutable_goalmessage();
+  public:
+  void unsafe_arena_set_allocated_goalmessage(
+      ::tcp_io_device::GoalMessage* goalmessage);
+  ::tcp_io_device::GoalMessage* unsafe_arena_release_goalmessage();
+
   void clear_message();
   MessageCase message_case() const;
   // @@protoc_insertion_point(class_scope:tcp_io_device.TCPMessage)
@@ -455,6 +482,7 @@ class TCPMessage final :
   void set_has_datamessage();
   void set_has_startmessage();
   void set_has_stopmessage();
+  void set_has_goalmessage();
 
   inline bool has_message() const;
   inline void clear_has_message();
@@ -472,6 +500,7 @@ class TCPMessage final :
       ::tcp_io_device::DataMessage* datamessage_;
       ::tcp_io_device::StartMessage* startmessage_;
       ::tcp_io_device::StopMessage* stopmessage_;
+      ::tcp_io_device::GoalMessage* goalmessage_;
     } message_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
     uint32_t _oneof_case_[1];
@@ -1439,6 +1468,174 @@ class DataMessage final :
 };
 // -------------------------------------------------------------------
 
+class GoalMessage final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:tcp_io_device.GoalMessage) */ {
+ public:
+  inline GoalMessage() : GoalMessage(nullptr) {}
+  ~GoalMessage() override;
+  explicit PROTOBUF_CONSTEXPR GoalMessage(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  GoalMessage(const GoalMessage& from);
+  GoalMessage(GoalMessage&& from) noexcept
+    : GoalMessage() {
+    *this = ::std::move(from);
+  }
+
+  inline GoalMessage& operator=(const GoalMessage& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline GoalMessage& operator=(GoalMessage&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const GoalMessage& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const GoalMessage* internal_default_instance() {
+    return reinterpret_cast<const GoalMessage*>(
+               &_GoalMessage_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    9;
+
+  friend void swap(GoalMessage& a, GoalMessage& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(GoalMessage* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(GoalMessage* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  GoalMessage* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<GoalMessage>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const GoalMessage& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const GoalMessage& from) {
+    GoalMessage::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(GoalMessage* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "tcp_io_device.GoalMessage";
+  }
+  protected:
+  explicit GoalMessage(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kGoalFieldNumber = 1,
+    kTimeSpanFieldNumber = 2,
+  };
+  // .tcp_io_device.ProtoVariable goal = 1;
+  bool has_goal() const;
+  private:
+  bool _internal_has_goal() const;
+  public:
+  void clear_goal();
+  const ::tcp_io_device::ProtoVariable& goal() const;
+  PROTOBUF_NODISCARD ::tcp_io_device::ProtoVariable* release_goal();
+  ::tcp_io_device::ProtoVariable* mutable_goal();
+  void set_allocated_goal(::tcp_io_device::ProtoVariable* goal);
+  private:
+  const ::tcp_io_device::ProtoVariable& _internal_goal() const;
+  ::tcp_io_device::ProtoVariable* _internal_mutable_goal();
+  public:
+  void unsafe_arena_set_allocated_goal(
+      ::tcp_io_device::ProtoVariable* goal);
+  ::tcp_io_device::ProtoVariable* unsafe_arena_release_goal();
+
+  // uint64 timeSpan = 2;
+  void clear_timespan();
+  uint64_t timespan() const;
+  void set_timespan(uint64_t value);
+  private:
+  uint64_t _internal_timespan() const;
+  void _internal_set_timespan(uint64_t value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:tcp_io_device.GoalMessage)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::tcp_io_device::ProtoVariable* goal_;
+    uint64_t timespan_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_tcp_5fdata_5fmessage_2eproto;
+};
+// -------------------------------------------------------------------
+
 class VariableDescription final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:tcp_io_device.VariableDescription) */ {
  public:
@@ -1487,7 +1684,7 @@ class VariableDescription final :
                &_VariableDescription_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    9;
+    10;
 
   friend void swap(VariableDescription& a, VariableDescription& b) {
     a.Swap(&b);
@@ -1736,7 +1933,7 @@ class ProtoVariable final :
                &_ProtoVariable_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    10;
+    11;
 
   friend void swap(ProtoVariable& a, ProtoVariable& b) {
     a.Swap(&b);
@@ -2186,6 +2383,80 @@ inline ::tcp_io_device::StopMessage* TCPMessage::mutable_stopmessage() {
   return _msg;
 }
 
+// .tcp_io_device.GoalMessage goalMessage = 7;
+inline bool TCPMessage::_internal_has_goalmessage() const {
+  return message_case() == kGoalMessage;
+}
+inline bool TCPMessage::has_goalmessage() const {
+  return _internal_has_goalmessage();
+}
+inline void TCPMessage::set_has_goalmessage() {
+  _impl_._oneof_case_[0] = kGoalMessage;
+}
+inline void TCPMessage::clear_goalmessage() {
+  if (_internal_has_goalmessage()) {
+    if (GetArenaForAllocation() == nullptr) {
+      delete _impl_.message_.goalmessage_;
+    }
+    clear_has_message();
+  }
+}
+inline ::tcp_io_device::GoalMessage* TCPMessage::release_goalmessage() {
+  // @@protoc_insertion_point(field_release:tcp_io_device.TCPMessage.goalMessage)
+  if (_internal_has_goalmessage()) {
+    clear_has_message();
+    ::tcp_io_device::GoalMessage* temp = _impl_.message_.goalmessage_;
+    if (GetArenaForAllocation() != nullptr) {
+      temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+    }
+    _impl_.message_.goalmessage_ = nullptr;
+    return temp;
+  } else {
+    return nullptr;
+  }
+}
+inline const ::tcp_io_device::GoalMessage& TCPMessage::_internal_goalmessage() const {
+  return _internal_has_goalmessage()
+      ? *_impl_.message_.goalmessage_
+      : reinterpret_cast< ::tcp_io_device::GoalMessage&>(::tcp_io_device::_GoalMessage_default_instance_);
+}
+inline const ::tcp_io_device::GoalMessage& TCPMessage::goalmessage() const {
+  // @@protoc_insertion_point(field_get:tcp_io_device.TCPMessage.goalMessage)
+  return _internal_goalmessage();
+}
+inline ::tcp_io_device::GoalMessage* TCPMessage::unsafe_arena_release_goalmessage() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:tcp_io_device.TCPMessage.goalMessage)
+  if (_internal_has_goalmessage()) {
+    clear_has_message();
+    ::tcp_io_device::GoalMessage* temp = _impl_.message_.goalmessage_;
+    _impl_.message_.goalmessage_ = nullptr;
+    return temp;
+  } else {
+    return nullptr;
+  }
+}
+inline void TCPMessage::unsafe_arena_set_allocated_goalmessage(::tcp_io_device::GoalMessage* goalmessage) {
+  clear_message();
+  if (goalmessage) {
+    set_has_goalmessage();
+    _impl_.message_.goalmessage_ = goalmessage;
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:tcp_io_device.TCPMessage.goalMessage)
+}
+inline ::tcp_io_device::GoalMessage* TCPMessage::_internal_mutable_goalmessage() {
+  if (!_internal_has_goalmessage()) {
+    clear_message();
+    set_has_goalmessage();
+    _impl_.message_.goalmessage_ = CreateMaybeMessage< ::tcp_io_device::GoalMessage >(GetArenaForAllocation());
+  }
+  return _impl_.message_.goalmessage_;
+}
+inline ::tcp_io_device::GoalMessage* TCPMessage::mutable_goalmessage() {
+  ::tcp_io_device::GoalMessage* _msg = _internal_mutable_goalmessage();
+  // @@protoc_insertion_point(field_mutable:tcp_io_device.TCPMessage.goalMessage)
+  return _msg;
+}
+
 // uint64 timestamp = 6;
 inline void TCPMessage::clear_timestamp() {
   _impl_.timestamp_ = uint64_t{0u};
@@ -2610,6 +2881,120 @@ inline void DataMessage::set_timespan(uint64_t value) {
 
 // -------------------------------------------------------------------
 
+// GoalMessage
+
+// .tcp_io_device.ProtoVariable goal = 1;
+inline bool GoalMessage::_internal_has_goal() const {
+  return this != internal_default_instance() && _impl_.goal_ != nullptr;
+}
+inline bool GoalMessage::has_goal() const {
+  return _internal_has_goal();
+}
+inline void GoalMessage::clear_goal() {
+  if (GetArenaForAllocation() == nullptr && _impl_.goal_ != nullptr) {
+    delete _impl_.goal_;
+  }
+  _impl_.goal_ = nullptr;
+}
+inline const ::tcp_io_device::ProtoVariable& GoalMessage::_internal_goal() const {
+  const ::tcp_io_device::ProtoVariable* p = _impl_.goal_;
+  return p != nullptr ? *p : reinterpret_cast<const ::tcp_io_device::ProtoVariable&>(
+      ::tcp_io_device::_ProtoVariable_default_instance_);
+}
+inline const ::tcp_io_device::ProtoVariable& GoalMessage::goal() const {
+  // @@protoc_insertion_point(field_get:tcp_io_device.GoalMessage.goal)
+  return _internal_goal();
+}
+inline void GoalMessage::unsafe_arena_set_allocated_goal(
+    ::tcp_io_device::ProtoVariable* goal) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.goal_);
+  }
+  _impl_.goal_ = goal;
+  if (goal) {
+    
+  } else {
+    
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:tcp_io_device.GoalMessage.goal)
+}
+inline ::tcp_io_device::ProtoVariable* GoalMessage::release_goal() {
+  
+  ::tcp_io_device::ProtoVariable* temp = _impl_.goal_;
+  _impl_.goal_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  }
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
+}
+inline ::tcp_io_device::ProtoVariable* GoalMessage::unsafe_arena_release_goal() {
+  // @@protoc_insertion_point(field_release:tcp_io_device.GoalMessage.goal)
+  
+  ::tcp_io_device::ProtoVariable* temp = _impl_.goal_;
+  _impl_.goal_ = nullptr;
+  return temp;
+}
+inline ::tcp_io_device::ProtoVariable* GoalMessage::_internal_mutable_goal() {
+  
+  if (_impl_.goal_ == nullptr) {
+    auto* p = CreateMaybeMessage<::tcp_io_device::ProtoVariable>(GetArenaForAllocation());
+    _impl_.goal_ = p;
+  }
+  return _impl_.goal_;
+}
+inline ::tcp_io_device::ProtoVariable* GoalMessage::mutable_goal() {
+  ::tcp_io_device::ProtoVariable* _msg = _internal_mutable_goal();
+  // @@protoc_insertion_point(field_mutable:tcp_io_device.GoalMessage.goal)
+  return _msg;
+}
+inline void GoalMessage::set_allocated_goal(::tcp_io_device::ProtoVariable* goal) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete _impl_.goal_;
+  }
+  if (goal) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(goal);
+    if (message_arena != submessage_arena) {
+      goal = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, goal, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  _impl_.goal_ = goal;
+  // @@protoc_insertion_point(field_set_allocated:tcp_io_device.GoalMessage.goal)
+}
+
+// uint64 timeSpan = 2;
+inline void GoalMessage::clear_timespan() {
+  _impl_.timespan_ = uint64_t{0u};
+}
+inline uint64_t GoalMessage::_internal_timespan() const {
+  return _impl_.timespan_;
+}
+inline uint64_t GoalMessage::timespan() const {
+  // @@protoc_insertion_point(field_get:tcp_io_device.GoalMessage.timeSpan)
+  return _internal_timespan();
+}
+inline void GoalMessage::_internal_set_timespan(uint64_t value) {
+  
+  _impl_.timespan_ = value;
+}
+inline void GoalMessage::set_timespan(uint64_t value) {
+  _internal_set_timespan(value);
+  // @@protoc_insertion_point(field_set:tcp_io_device.GoalMessage.timeSpan)
+}
+
+// -------------------------------------------------------------------
+
 // VariableDescription
 
 // int32 entityID = 1;
@@ -2916,6 +3301,8 @@ inline void ProtoVariable::set_allocated_data(std::string* data) {
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------
